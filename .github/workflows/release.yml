@@ -1,7 +1,9 @@
 name: Release
+# Every push to main: if manifest.json has a version that has no release yet, build the zip and publish it.
 on:
   push:
-    tags: ['v*']
+    branches: [main]
+  workflow_dispatch:
 permissions:
   contents: write
 jobs:
@@ -9,14 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build zip
+      - name: Publish release if this version is new
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          V=$(python3 -c "import json;print(json.load(open('manifest.json'))['version'])")
+          if gh release view "v$V" >/dev/null 2>&1; then echo "v$V already released"; exit 0; fi
           mkdir ZedAssistBySUGAR
           cp -r manifest.json background.js content lib ocr panel vendor sheet icons ZedAssistBySUGAR/
           printf 'ZedAssistBySUGAR - install in 1 minute\n1. Unzip somewhere permanent.\n2. chrome://extensions > Developer mode > Load unpacked > pick this folder (the one with manifest.json).\n3. Pin it, open the assessor portal, click the icon.\n' > ZedAssistBySUGAR/START-HERE.txt
           zip -qr ZedAssistBySUGAR.zip ZedAssistBySUGAR
-      - name: Publish release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: ZedAssistBySUGAR.zip
-          generate_release_notes: true
+          gh release create "v$V" ZedAssistBySUGAR.zip --title "ZedAssistBySUGAR v$V" --generate-notes
