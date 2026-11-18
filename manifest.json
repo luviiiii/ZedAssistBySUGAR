@@ -1,0 +1,54 @@
+{
+  "manifest_version": 3,
+  "name": "ZedAssistBySUGAR",
+  "version": "1.5.2",
+  "description": "Helps a ZED assessor read a Bronze case, check it against the rules and fill the remarks. Never presses Final Submit.",
+  "permissions": [
+    "sidePanel",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://loginzed.msme.gov.in/*",
+    "https://script.google.com/*",
+    "https://script.googleusercontent.com/*",
+    "https://api.anthropic.com/*",
+    "https://generativelanguage.googleapis.com/*",
+    "https://api.github.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "panel/panel.html"
+  },
+  "action": {
+    "default_title": "ZedAssistBySUGAR",
+    "default_icon": {
+      "16": "icons/logo16.png",
+      "32": "icons/logo32.png",
+      "48": "icons/logo48.png",
+      "128": "icons/logo128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://loginzed.msme.gov.in/Assessment/*"
+      ],
+      "js": [
+        "content/portal.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "icons": {
+    "16": "icons/logo16.png",
+    "32": "icons/logo32.png",
+    "48": "icons/logo48.png",
+    "128": "icons/logo128.png"
+  }
+}
